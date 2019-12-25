@@ -1,4 +1,4 @@
-package v1
+package v2
 
 import (
 	"net/http"
@@ -16,7 +16,7 @@ GET /v1/lookup
 
 Reference:
 https://matrix.org/docs/spec/identity_service/r0.2.1#get-matrix-identity-api-v1-lookup */
-func (v *V1) GetLookup(c echo.Context) error {
+func (v *V2) GetLookup(c echo.Context) error {
 	return c.JSON(http.StatusNotImplemented, server.Errors[http.StatusNotImplemented])
 }
 
@@ -32,6 +32,6 @@ to look up.
 
 Reference:
 https://matrix.org/docs/spec/identity_service/r0.2.1#post-matrix-identity-api-v1-bulk-lookup */
-func (v *V1) PostBulkLookup(c echo.Context) error {
+func (v *V2) PostBulkLookup(c echo.Context) error {
 	return c.JSON(http.StatusNotImplemented, server.Errors[http.StatusNotImplemented])
 }

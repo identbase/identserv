@@ -1,4 +1,4 @@
-module github.com/mihok/identbase
+module github.com/identbase/identserv
 
 go 1.12
 

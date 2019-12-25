@@ -1,4 +1,4 @@
-package v1
+package v2
 
 import (
 	"net/http"
@@ -15,6 +15,6 @@ type Status struct {
 
 /*
 GetStatus is used for auto-discovery and health checks. */
-func (v *V1) GetStatus(c echo.Context) error {
+func (v *V2) GetStatus(c echo.Context) error {
 	return c.JSON(http.StatusOK, Status{})
 }

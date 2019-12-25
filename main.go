@@ -10,9 +10,9 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
-	identity "github.com/mihok/identbase/pkg/matrix/identity/v1"
-	"github.com/mihok/identbase/pkg/server"
-	"github.com/mihok/identbase/pkg/store"
+	identity "github.com/identbase/identserv/pkg/matrix/identity"
+	"github.com/identbase/identserv/pkg/server"
+	"github.com/identbase/identserv/pkg/store"
 )
 
 /*

@@ -1,4 +1,4 @@
-package v1
+package v2
 
 import (
 	"net/http"
@@ -27,7 +27,7 @@ identifier is an opaque string.
 
 Reference:
 https://matrix.org/docs/spec/identity_service/r0.2.1#id12 */
-func (v *V1) GetKey(c echo.Context) error {
+func (v *V2) GetKey(c echo.Context) error {
 	db, err := v.Context.GetDatabase()
 	if err != nil {
 		return err
@@ -61,7 +61,7 @@ Query Parameters:
 
 References:
 https://matrix.org/docs/spec/identity_service/r0.2.1#get-matrix-identity-api-v1-pubkey-isvalid */
-func (v *V1) GetKeyValidity(c echo.Context) error {
+func (v *V2) GetKeyValidity(c echo.Context) error {
 	return c.JSON(http.StatusNotImplemented, server.Errors[http.StatusNotImplemented])
 }
 
@@ -74,6 +74,6 @@ Query Parameters:
 
 References:
 https://matrix.org/docs/spec/identity_service/r0.2.1#get-matrix-identity-api-v1-pubkey-ephemeral-isvalid */
-func (v *V1) GetEmphemeralKeyValidity(c echo.Context) error {
+func (v *V2) GetEmphemeralKeyValidity(c echo.Context) error {
 	return c.JSON(http.StatusNotImplemented, server.Errors[http.StatusNotImplemented])
 }
