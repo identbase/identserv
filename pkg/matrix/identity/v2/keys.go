@@ -5,7 +5,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"github.com/mihok/identbase/pkg/server"
+	"github.com/identbase/serv/pkg/server"
 )
 
 /*
@@ -52,7 +52,7 @@ func (v *V2) GetKey(c echo.Context) error {
 }
 
 /*
-GetKeyValidity
+GetKeyValidity checks the validity of a public key.
 
 GET /v1/pubkey/isvalid
 GET /v1/pubkey/emphemeral/isvalid
@@ -66,7 +66,7 @@ func (v *V2) GetKeyValidity(c echo.Context) error {
 }
 
 /*
-GetEmphemeralKeyValidity
+GetEmphemeralKeyValidity checks the validity of an emphemeral key.
 
 GET /v1/pubkey/emphemeral/isvalid
 

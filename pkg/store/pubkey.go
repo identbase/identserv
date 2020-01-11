@@ -5,7 +5,7 @@ import (
 )
 
 /*
-PublicKey's are used for various purposes. An identity server has some
+PublicKey is used for various purposes. An identity server has some
 long-term public-private keypairs. These are named in a scheme
 algorithm:identifier, e.g. ed25519:0. When signing an association, the standard
 Signing JSON algorithm applies.
@@ -19,6 +19,8 @@ type PublicKey struct {
 	Content    string `json:"public_key"`
 }
 
+/*
+Key is the key used to save and lookup a particular item. */
 func (p *PublicKey) Key() string {
 	return fmt.Sprintf("%s:%s", p.Algorithm, p.Identifier)
 }

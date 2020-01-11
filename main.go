@@ -11,8 +11,8 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 
 	identity "github.com/identbase/identserv/pkg/matrix/identity"
-	"github.com/identbase/identserv/pkg/server"
 	"github.com/identbase/identserv/pkg/store"
+	"github.com/identbase/serv/pkg/server"
 )
 
 /*

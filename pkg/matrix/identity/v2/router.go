@@ -1,16 +1,18 @@
 package v2
 
 import (
-	"github.com/mihok/identbase/pkg/server"
-	"github.com/mihok/identbase/pkg/store"
+	"github.com/identbase/identserv/pkg/store"
+	"github.com/identbase/serv/pkg/server"
 )
 
 /*
-V1 implementation for the routes */
+V2 implementation for the routes */
 type V2 struct {
 	Context
 }
 
+/*
+Context provides any state context for V1 routes. */
 // TODO: Add better support for a generic list of context
 type Context interface {
 	GetDatabase() (*store.InMemory, error)
@@ -18,7 +20,9 @@ type Context interface {
 
 /*
 Routes provides a list of routes that this Router will answer to. */
-func (v *V2) Routes(c Context) []*server.Route {
+func Routes(c Context) []*server.Route {
+	v := V2{}
+
 	// TODO: Maybe dont push stuff to V1 here?
 	v.Context = c
 	pre := "/v2"

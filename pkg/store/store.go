@@ -52,6 +52,8 @@ type InMemory struct {
 	data map[string]Keyer
 }
 
+/*
+New creates a new InMemory store. */
 func New(l Logger) *InMemory {
 	return &InMemory{
 		log: l,

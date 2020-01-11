@@ -6,9 +6,9 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// TODO: Add process metrics to monitor the server
 /*
 Status is a simple JSON response object. */
+// TODO: Add process metrics to monitor the server
 type Status struct {
 	// Message string `json:"message"`
 }

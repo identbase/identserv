@@ -5,12 +5,12 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"github.com/mihok/identbase/pkg/server"
-	// "github.com/mihok/identbase/pkg/store"
+	"github.com/identbase/serv/pkg/server"
+	// "github.com/identbase/identserv/pkg/store"
 )
 
 /*
-GetLookup
+GetLookup is a lookup request to find a particular ThreePID.
 
 GET /v1/lookup
 
@@ -21,7 +21,7 @@ func (v *V2) GetLookup(c echo.Context) error {
 }
 
 /*
-PostBulkLookup
+PostBulkLookup allows one to lookup many ThreePID's.
 
 POST /v1/bulk_lookup
 
