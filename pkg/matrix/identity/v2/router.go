@@ -1,6 +1,8 @@
 package v2
 
 import (
+	"fmt"
+
 	"github.com/identbase/identserv/pkg/store"
 	"github.com/identbase/serv/pkg/server"
 )
@@ -32,56 +34,70 @@ func Routes(c Context) []*server.Route {
 		&server.Route{
 			RouteMeta: server.RouteMeta{
 				Method: "GET",
-				Path:   pre + "/",
+				Path:   fmt.Sprintf("%s/", pre),
 				Name:   "Status check",
 				// Default: true,
 			},
 			Handler: v.GetStatus,
 		},
 
-		// Key related routes
-		&server.Route{
-			RouteMeta: server.RouteMeta{
-				Method: "GET",
-				Path:   pre + "/pubkey/:key",
-				Name:   "Get key",
-			},
-			Handler: v.GetKey,
-		},
-		&server.Route{
-			RouteMeta: server.RouteMeta{
-				Method: "GET",
-				Path:   pre + "/pubkey/isvalid",
-				Name:   "Get key",
-			},
-			Handler: v.GetKeyValidity,
-		},
-		&server.Route{
-			RouteMeta: server.RouteMeta{
-				Method: "GET",
-				Path:   pre + "/pubkey/emphemeral/isvalid",
-				Name:   "Get key",
-			},
-			Handler: v.GetEmphemeralKeyValidity,
-		},
-
-		// Lookup routes
-		&server.Route{
-			RouteMeta: server.RouteMeta{
-				Method: "GET",
-				Path:   pre + "/lookup",
-				Name:   "Get lookup",
-			},
-			Handler: v.GetLookup,
-		},
+		// Account routes
 		&server.Route{
 			RouteMeta: server.RouteMeta{
 				Method: "POST",
-				Path:   pre + "/bulk_lookup",
-				Name:   "Post bulk lookup",
+				Path:   fmt.Sprintf("%s/account/register", pre),
+				Name:   "Account registration",
 			},
-			Handler: v.PostBulkLookup,
+			Handler: v.PostAccountRegister,
 		},
+
+		// Key related routes
+		/*
+			&server.Route{
+				RouteMeta: server.RouteMeta{
+					Method: "GET",
+					Path:   pre + "/pubkey/:key",
+					Name:   "Get key",
+				},
+				Handler: v.GetKey,
+			},
+			&server.Route{
+				RouteMeta: server.RouteMeta{
+					Method: "GET",
+					Path:   pre + "/pubkey/isvalid",
+					Name:   "Get key",
+				},
+				Handler: v.GetKeyValidity,
+			},
+			&server.Route{
+				RouteMeta: server.RouteMeta{
+					Method: "GET",
+					Path:   pre + "/pubkey/emphemeral/isvalid",
+					Name:   "Get key",
+				},
+				Handler: v.GetEmphemeralKeyValidity,
+			},
+		*/
+
+		// Lookup routes
+		/*
+			&server.Route{
+				RouteMeta: server.RouteMeta{
+					Method: "GET",
+					Path:   pre + "/lookup",
+					Name:   "Get lookup",
+				},
+				Handler: v.GetLookup,
+			},
+			&server.Route{
+				RouteMeta: server.RouteMeta{
+					Method: "POST",
+					Path:   pre + "/bulk_lookup",
+					Name:   "Post bulk lookup",
+				},
+				Handler: v.PostBulkLookup,
+			},
+		*/
 	}
 
 }

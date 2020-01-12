@@ -9,6 +9,21 @@ import (
 )
 
 /*
+AccountRegisterRequest is the JSON request expected by PostAccountRegister. */
+type AccountRegisterRequest struct {
+	AccessToken string `json:"access_token" form:"access_token" query:"access_token"`
+	Type        string `json:"token_type" form:"token_type" query:"token_type"`
+	Domain      string `json:"matrix_server_name" form:"matrix_server_name" query:"matrix_server_name"`
+	Expires     int    `json:"expires_in" form:"expires_in" query:"expires_in"`
+}
+
+/*
+AccountRegisterResponse is the JSON response sent by PostAccountRegister. */
+type AccountRegisterResponse struct {
+	Token string `json:"token"`
+}
+
+/*
 PostAccountRegister registers a new matrix user in the server.
 
 POST /v2/account/register
@@ -25,7 +40,12 @@ expires_in - Required. An integer of seconds before this token expires and a
 Reference:
 https://matrix.org/docs/spec/identity_service/r0.3.0#post-matrix-identity-v2-account-register */
 func (v *V2) PostAccountRegister(c echo.Context) error {
-	return c.JSON(http.StatusNotImplemented, server.Errors[http.StatusNotImplemented])
+	req := new(AccountRegisterRequest)
+	if err := c.Bind(req); err != nil {
+		return c.JSON(http.StatusBadRequest, *server.NewHALError("E_BAD_JSON", "Malformed JSON"))
+	}
+
+	return c.JSON(http.StatusNotImplemented, *server.Errors[http.StatusNotImplemented])
 }
 
 /*
