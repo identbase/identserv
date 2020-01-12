@@ -3,7 +3,7 @@ module github.com/identbase/identserv
 go 1.12
 
 require (
-	github.com/identbase/getting v0.0.0-20200112022606-921c08c39672
+	github.com/identbase/getting v0.0.0-20200112134239-a57bf8e1de59
 	github.com/identbase/serv v0.0.0-20200112022950-ee27b8baf39e
 	github.com/labstack/echo/v4 v4.1.13
 	github.com/labstack/gommon v0.3.0

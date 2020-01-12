@@ -1,26 +1,66 @@
 package v2
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 
+	"github.com/identbase/getting"
+	"github.com/identbase/getting/pkg/resource/representor"
 	"github.com/identbase/serv/pkg/server"
 )
 
 /*
-AccountRegisterRequest is the JSON request expected by PostAccountRegister. */
-type AccountRegisterRequest struct {
+RegisterRequest is the JSON request expected by PostAccountRegister. */
+type RegisterRequest struct {
 	AccessToken string `json:"access_token" form:"access_token" query:"access_token"`
 	Type        string `json:"token_type" form:"token_type" query:"token_type"`
 	Domain      string `json:"matrix_server_name" form:"matrix_server_name" query:"matrix_server_name"`
 	Expires     int    `json:"expires_in" form:"expires_in" query:"expires_in"`
 }
 
+type RegisterFederationResponse struct {
+	sub     string
+	errcode string
+	error   string
+}
+
 /*
-AccountRegisterResponse is the JSON response sent by PostAccountRegister. */
-type AccountRegisterResponse struct {
-	Token string `json:"token"`
+RegisterResponse is the JSON response sent by PostAccountRegister. */
+type RegisterResponse struct {
+	representor.HALBody
+}
+
+/*
+NewRegisterResponse creates a RegisterResponse object to respond with. */
+func NewRegisterResponse(t string) *RegisterResponse {
+	r := RegisterResponse{
+		representor.HALBody{
+			Links: map[string][]representor.HALLink{
+				"self": []representor.HALLink{
+					representor.HALLink{
+						HRef:  "/_matrix/identity/api/v2/account/register",
+						Title: "Register",
+					},
+				},
+				"account": []representor.HALLink{
+					representor.HALLink{
+						HRef:  "/_matrix/identity/api/v2/account",
+						Title: "Account information",
+					},
+				},
+				"logout": []representor.HALLink{
+					representor.HALLink{
+						HRef:  "/_matrix/identity/api/v2/account/logout",
+						Title: "Logout",
+					},
+				},
+			},
+		},
+	}
+
+	return &r
 }
 
 /*
@@ -40,12 +80,39 @@ expires_in - Required. An integer of seconds before this token expires and a
 Reference:
 https://matrix.org/docs/spec/identity_service/r0.3.0#post-matrix-identity-v2-account-register */
 func (v *V2) PostAccountRegister(c echo.Context) error {
-	req := new(AccountRegisterRequest)
+	req := new(RegisterRequest)
 	if err := c.Bind(req); err != nil {
 		return c.JSON(http.StatusBadRequest, *server.NewHALError("E_BAD_JSON", "Malformed JSON"))
 	}
 
-	return c.JSON(http.StatusNotImplemented, *server.Errors[http.StatusNotImplemented])
+	g, err := getting.New(fmt.Sprintf("matrix://%s", req.Domain))
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, *server.Errors[http.StatusInternalServerError])
+	}
+
+	f, err := g.Follow("user", map[string]string{
+		"access_token": req.AccessToken,
+	})
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, *server.Errors[http.StatusInternalServerError])
+	}
+
+	r, err := f.Get()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, *server.Errors[http.StatusInternalServerError])
+	}
+
+	if rfr, ok := r.(RegisterFederationResponse); ok {
+		if rfr.sub != "" {
+			// TODO: Generate Token
+			// TODO: Return response
+			return c.JSON(http.StatusNotImplemented, *server.Errors[http.StatusNotImplemented])
+		} else {
+			return c.JSON(http.StatusUnauthorized, *server.Errors[http.StatusUnauthorized])
+		}
+	} else {
+		return c.JSON(http.StatusInternalServerError, *server.Errors[http.StatusInternalServerError])
+	}
 }
 
 /*
