@@ -8,8 +8,17 @@ import (
 
 	"github.com/identbase/getting"
 	"github.com/identbase/getting/pkg/resource/representor"
+	"github.com/identbase/identserv/pkg/account"
 	"github.com/identbase/serv/pkg/server"
 )
+
+/*
+Account interface represents an account object held by the server to connect
+a user from a matrix server to its threepids. */
+type Account interface {
+	GenerateToken()
+	Save() error
+}
 
 /*
 RegisterRequest is the JSON request expected by PostAccountRegister. */
@@ -20,6 +29,8 @@ type RegisterRequest struct {
 	Expires     int    `json:"expires_in" form:"expires_in" query:"expires_in"`
 }
 
+/*
+RegisterFederationResponse is the JSON response from a Matrix server. */
 type RegisterFederationResponse struct {
 	sub     string
 	errcode string
@@ -56,6 +67,9 @@ func NewRegisterResponse(t string) *RegisterResponse {
 						Title: "Logout",
 					},
 				},
+			},
+			Properties: map[string]interface{}{
+				"token": t,
 			},
 		},
 	}
@@ -105,14 +119,25 @@ func (v *V2) PostAccountRegister(c echo.Context) error {
 	if rfr, ok := r.(RegisterFederationResponse); ok {
 		if rfr.sub != "" {
 			// TODO: Generate Token
-			// TODO: Return response
-			return c.JSON(http.StatusNotImplemented, *server.Errors[http.StatusNotImplemented])
-		} else {
-			return c.JSON(http.StatusUnauthorized, *server.Errors[http.StatusUnauthorized])
+			a := account.New(rfr.sub)
+			if err := a.GenerateToken(); err != nil {
+				return err
+			}
+
+			d, err := v.GetDatabase()
+			if err != nil {
+				return err
+			}
+
+			d.Put(a)
+
+			return c.JSON(http.StatusOK, NewRegisterResponse(a.Token))
 		}
-	} else {
-		return c.JSON(http.StatusInternalServerError, *server.Errors[http.StatusInternalServerError])
+
+		return c.JSON(http.StatusUnauthorized, *server.Errors[http.StatusUnauthorized])
 	}
+
+	return c.JSON(http.StatusInternalServerError, *server.Errors[http.StatusInternalServerError])
 }
 
 /*

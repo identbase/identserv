@@ -26,7 +26,7 @@ func Routes(c Context) []*server.Route {
 
 	// TODO: Maybe dont push stuff to V1 here?
 	v.Context = c
-	pre := "/v1"
+	pre := "/api/v1"
 
 	return []*server.Route{
 		// Status check

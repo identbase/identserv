@@ -93,7 +93,7 @@ func main() {
 	}))
 
 	db := store.New(s.Logger())
-	s.Load(s.NewModule("/_matrix/identity/api", &identity.Matrix{Database: db}))
+	s.Load(s.NewModule("/_matrix/identity", &identity.Matrix{Database: db}))
 
 	s.Logger().Infof("Launching identbase service on %s:%s", config.Host, config.Port)
 	s.Logger().Fatal(s.Start(&http.Server{
