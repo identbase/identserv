@@ -12,21 +12,21 @@ import (
 /*
 User defines a user within the identity server. */
 type User struct {
-	key   string
+	ID    string
 	Token string
 }
 
 /*
 Key implements the Keyer interface so that a User can be stored. */
-func (u *User) Key() string {
-	return u.key
+func (u User) Key() string {
+	return u.Token
 }
 
 /*
 GenerateToken creates a new (access) Token for a User. */
 func (u *User) GenerateToken() error {
 	t := time.Now()
-	h, err := bcrypt.GenerateFromPassword([]byte(fmt.Sprintf("%s%s", u.key, t)), bcrypt.DefaultCost)
+	h, err := bcrypt.GenerateFromPassword([]byte(fmt.Sprintf("%s%s", u.ID, t)), bcrypt.DefaultCost)
 	if err != nil {
 		return err
 	}
@@ -41,7 +41,7 @@ func (u *User) GenerateToken() error {
 New creates a new User object. */
 func New(id string) *User {
 	u := User{
-		key: id,
+		ID: id,
 	}
 
 	return &u

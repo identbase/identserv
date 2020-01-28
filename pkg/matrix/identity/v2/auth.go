@@ -32,9 +32,10 @@ type RegisterRequest struct {
 /*
 RegisterFederationResponse is the JSON response from a Matrix server. */
 type RegisterFederationResponse struct {
-	sub     string
-	errcode string
-	error   string
+	representor.HALBody
+	// Id           string `json:"sub"`
+	// ErrorCode    string `json:"errcode"`
+	// ErrorMessage string `json:"error"`
 }
 
 /*
@@ -51,25 +52,35 @@ func NewRegisterResponse(t string) *RegisterResponse {
 			Links: map[string][]representor.HALLink{
 				"self": []representor.HALLink{
 					representor.HALLink{
-						HRef:  "/_matrix/identity/api/v2/account/register",
+						HRef:  "/_matrix/identity/v2/account/register",
 						Title: "Register",
+					},
+				},
+				"base": []representor.HALLink{
+					representor.HALLink{
+						HRef:  "/_matrix/identity/v2/",
+						Title: "Default",
 					},
 				},
 				"account": []representor.HALLink{
 					representor.HALLink{
-						HRef:  "/_matrix/identity/api/v2/account",
+						HRef:  "/_matrix/identity/v2/account",
 						Title: "Account information",
 					},
 				},
 				"logout": []representor.HALLink{
 					representor.HALLink{
-						HRef:  "/_matrix/identity/api/v2/account/logout",
+						HRef:  "/_matrix/identity/v2/account/logout",
 						Title: "Logout",
 					},
 				},
 			},
 			Properties: map[string]interface{}{
 				"token": t,
+				// `token` is correct for the spec, but we released with `access_token`
+				//  for a substantial amount of time. Serve both to make spec-compliant clients
+				//  happy.
+				"access_token": t,
 			},
 		},
 	}
@@ -99,34 +110,40 @@ func (v *V2) PostAccountRegister(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, *server.NewHALError("E_BAD_JSON", "Malformed JSON"))
 	}
 
-	g, err := getting.New(fmt.Sprintf("matrix://%s", req.Domain))
+	d := fmt.Sprintf("http://%s", req.Domain)
+	g, err := getting.New(d)
 	if err != nil {
+		c.Logger().Error("Unable to set up Getting")
 		return c.JSON(http.StatusInternalServerError, *server.Errors[http.StatusInternalServerError])
 	}
 
-	f, err := g.Follow("user", map[string]string{
+	f, err := g.Follow("openid", map[string]string{
 		"access_token": req.AccessToken,
 	})
 	if err != nil {
+		c.Logger().Errorf("Unable to find links: %v", err)
 		return c.JSON(http.StatusInternalServerError, *server.Errors[http.StatusInternalServerError])
 	}
 
 	r, err := f.Get()
 	if err != nil {
+		c.Logger().Errorf("Unable to get resource: %v", err)
 		return c.JSON(http.StatusInternalServerError, *server.Errors[http.StatusInternalServerError])
 	}
 
-	if rfr, ok := r.(RegisterFederationResponse); ok {
-		if rfr.sub != "" {
-			// TODO: Generate Token
-			a := account.New(rfr.sub)
+	if rfr, ok := r.(representor.HALBody); ok {
+		if sub, ok := rfr.Properties["sub"].(string); ok && sub != "" {
+			c.Logger().Infof("Registering new account: '%s'", sub)
+			a := account.New(sub)
 			if err := a.GenerateToken(); err != nil {
-				return err
+				c.Logger().Errorf("Unable to generate token: %v", err)
+				return c.JSON(http.StatusInternalServerError, *server.Errors[http.StatusInternalServerError])
 			}
 
 			d, err := v.GetDatabase()
 			if err != nil {
-				return err
+				c.Logger().Errorf("Unable to get database: %v", err)
+				return c.JSON(http.StatusInternalServerError, *server.Errors[http.StatusInternalServerError])
 			}
 
 			d.Put(a)
@@ -134,6 +151,7 @@ func (v *V2) PostAccountRegister(c echo.Context) error {
 			return c.JSON(http.StatusOK, NewRegisterResponse(a.Token))
 		}
 
+		// TODO: Handle other errors passed by the Federation server?
 		return c.JSON(http.StatusUnauthorized, *server.Errors[http.StatusUnauthorized])
 	}
 

@@ -34,7 +34,7 @@ func Routes(c Context) []*server.Route {
 		&server.Route{
 			RouteMeta: server.RouteMeta{
 				Method: "GET",
-				Path:   fmt.Sprintf("%s/", pre),
+				Path:   fmt.Sprintf("%s", pre),
 				Name:   "Status check",
 				// Default: true,
 			},
@@ -50,54 +50,14 @@ func Routes(c Context) []*server.Route {
 			},
 			Handler: v.PostAccountRegister,
 		},
-
-		// Key related routes
-		/*
-			&server.Route{
-				RouteMeta: server.RouteMeta{
-					Method: "GET",
-					Path:   pre + "/pubkey/:key",
-					Name:   "Get key",
-				},
-				Handler: v.GetKey,
+		&server.Route{
+			RouteMeta: server.RouteMeta{
+				Method: "POST",
+				Path:   fmt.Sprintf("%s/account/logout", pre),
+				Name:   "Account logout",
 			},
-			&server.Route{
-				RouteMeta: server.RouteMeta{
-					Method: "GET",
-					Path:   pre + "/pubkey/isvalid",
-					Name:   "Get key",
-				},
-				Handler: v.GetKeyValidity,
-			},
-			&server.Route{
-				RouteMeta: server.RouteMeta{
-					Method: "GET",
-					Path:   pre + "/pubkey/emphemeral/isvalid",
-					Name:   "Get key",
-				},
-				Handler: v.GetEmphemeralKeyValidity,
-			},
-		*/
-
-		// Lookup routes
-		/*
-			&server.Route{
-				RouteMeta: server.RouteMeta{
-					Method: "GET",
-					Path:   pre + "/lookup",
-					Name:   "Get lookup",
-				},
-				Handler: v.GetLookup,
-			},
-			&server.Route{
-				RouteMeta: server.RouteMeta{
-					Method: "POST",
-					Path:   pre + "/bulk_lookup",
-					Name:   "Post bulk lookup",
-				},
-				Handler: v.PostBulkLookup,
-			},
-		*/
+			Handler: v.AuthRequired(v.PostAccountLogout),
+		},
 	}
 
 }
